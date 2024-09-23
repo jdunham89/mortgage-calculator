@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .alert-icon {
+            margin-right: 12px;
+            font-size: 24px;
+        }
+
+        .alert-title {
+            margin: 0 0 4px;
+            font-size: 18px;
+        }
+
+        .alert-description {
+            margin: 0;
+        }
+
+        .result-group {
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 18px;
+            margin: 0 0 8px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .result-details {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 16px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        @media (min-width: 768px) {
+            .calculator-results {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+            }
+
+            .calculator-results .card {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        .alert-eligible {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-ineligible {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-icon-eligible {
+            color: #28a745;
+        }
+
+        .alert-icon-ineligible {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Mortgage Calculator</h1>
+        </div>
+        <div class="card-content">
+            <div class="calculator-grid">
+                <div class="calculator-inputs">
+                    <div id="eligibilityAlert" class="alert mb-6">
+                        <span id="eligibilityIcon" class="alert-icon"></span>
+                        <div>
+                            <h2 id="eligibilityTitle" class="alert-title"></h2>
+                            <p id="eligibilityDescription" class="alert-description"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taxes-fees" class="switch">
+                            <input type="checkbox" id="taxes-fees" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <label for="taxes-fees">Include taxes & fees</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="home-price">Home price</label>
+                        <input type="number" id="home-price" value="300000">
+                    </div>
+
+                    <div class="form-group-grid">
+                        <div class="form-group">
+                            <label for="down-payment">Down payment</label>
+                            <input type="number" id="down-payment" value="60000">
+                        </div>
+                        <div class="form-group">
+                            <label for="down-payment-percent">Down payment %</label>
+                            <input type="number" id="down-payment-percent" value="20">
+                        </div>
+                    </div>
+
+                    <div class="form-group-grid">
+                        <div class="form-group">
+                            <label for="loan-term">Loan term</label>
+                            <select id="loan-term">
+                                <option value="15">15-yr fixed</option>
+                                <option value="30" selected>30-yr fixed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="interest-rate">Interest rate</label>
+                            <input type="number" id="interest-rate" value="6.907" step="0.001">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rental-income">Rental income (monthly)</label>
+                        <input type="number" id="rental-income" value="0">
+                    </div>
+
+                    <div id="taxes-fees-section">
+                        <div class="form-group-grid">
+                            <div class="form-group">
+                                <label for="property-tax">Property tax (yearly)</label>
+                                <input type="number" id="property-tax" value="3750">
+                            </div>
+                            <div class="form-group">
+                                <label for="home-insurance">Home insurance (yearly)</label>
+                                <input type="number" id="home-insurance" value="1050">
+                            </div>
+                        </div>
+                        <div class="form-group-grid">
+                            <div class="form-group">
+                                <label for="pmi">Private mortgage insurance (monthly)</label>
+                                <input type="number" id="pmi" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="hoa">Homeowners association (monthly)</label>
+                                <input type="number" id="hoa" value="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculator-results">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Monthly Payment</h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="result-group">
+                                <h3 class="result-title">Total</h3>
+                                <p id="total-payment" class="result-value"></p>
+                            </div>
+                            <div class="result-details">
+                                <p class="result-item">
+                                    <span>Loan:</span>
+                                    <span id="loan-amount"></span>
+                                </p>
+                                <p class="result-item">
+                                    <span>Taxes & fees:</span>
+                                    <span id="taxes-fees-amount"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select');
+            const taxesFees = document.getElementById('taxes-fees');
+            const taxesFeesSection = document.getElementById('taxes-fees-section');
+            const eligibilityAlert = document.getElementById('eligibilityAlert');
+            const eligibilityIcon = document.getElementById('eligibilityIcon');
+            const eligibilityTitle = document.getElementById('eligibilityTitle');
+            const eligibilityDescription = document.getElementById('eligibilityDescription');
+            const totalPayment = document.getElementById('total-payment');
+            const loanAmount = document.getElementById('loan-amount');
+            const taxesFeesAmount = document.getElementById('taxes-fees-amount');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateMortgage);
+            });
+
+            taxesFees.addEventListener('change', function() {
+                taxesFeesSection.style.display = this.checked ? 'block' : 'none';
+                calculateMortgage();
+            });
+
+            function calculateMortgage() {
+                const homePrice = parseFloat(document.getElementById('home-price').value) || 0;
+                const downPayment = parseFloat(document.getElementById('down-payment').value) || 0;
+                const loanTerm = parseInt(document.getElementById('loan-term').value) || 30;
+                const interestRate = parseFloat(document.getElementById('interest-rate').value) || 0;
+                const rentalIncome = parseFloat(document.getElementById('rental-income').value) || 0;
+
+                const principal = homePrice - downPayment;
+                const monthlyInterest = interestRate / 100 / 12;
+                const numberOfPayments = loanTerm * 12;
+
+                let monthlyLoanPayment = 0;
+                if (principal > 0 && monthlyInterest > 0) {
+                    monthlyLoanPayment = (principal * monthlyInterest * Math.pow(1 + monthlyInterest, numberOfPayments)) /
+                        (Math.pow(1 + monthlyInterest, numberOfPayments) - 1);
+                }
+
+                let monthlyTaxesAndFees = 0;
+                if (taxesFees.checked) {
+                    const propertyTax = parseFloat(document.getElementById('property-tax').value) / 12 || 0;
+                    const homeInsurance = parseFloat(document.getElementById('home-insurance').value) / 12 || 0;
+                    const pmi = parseFloat(document.getElementById('pmi').value) || 0;
+                    const hoa = parseFloat(document.getElementById('hoa').value) || 0;
+                    monthlyTaxesAndFees = propertyTax + homeInsurance + pmi + hoa;
+                }
+
+                const totalMonthlyPayment = monthlyLoanPayment + monthlyTaxesAndFees;
+
+                totalPayment.textContent = totalMonthlyPayment > 0 ? `$${totalMonthlyPayment.toFixed(2)}` : '$0.00';
+                loanAmount.textContent = monthlyLoanPayment > 0 ? `$${monthlyLoanPayment.toFixed(2)}` : '$0.00';
+                taxesFeesAmount.textContent = monthlyTaxesAndFees > 0 ? `$${monthlyTaxesAndFees.toFixed(2)}` : '$0.00';
+
+                const isEligible = rentalIncome >= totalMonthlyPayment;
+                eligibilityAlert.className = `alert mb-6 ${isEligible ? 'alert-eligible' : 'alert-ineligible'}`;
+                eligibilityIcon.className = `alert-icon ${isEligible ? 'alert-icon-eligible' : 'alert-icon-ineligible'}`;
+                eligibilityIcon.textContent = isEligible ? '✓' : '✗';
+                eligibilityTitle.textContent = isEligible ? 'Loan Eligible' : 'Not Eligible';
+                eligibilityDescription.textContent = isEligible
+                    ? 'Your rental income is sufficient to cover the monthly payment.'
+                    : 'Your rental income is less than the monthly payment.';
+
+                updateDownPaymentPercentage();
+            }
+
+            function updateDownPaymentPercentage() {
+                const homePrice = parseFloat(document.getElementById('home-price').value) || 0;
+                const downPayment = parseFloat(document.getElementById('down-payment').value) || 0;
+                const downPaymentPercent = homePrice > 0 ? (downPayment / homePrice) * 100 : 0;
+                document.getElementById('down-payment-percent').value = downPaymentPercent.toFixed(2);
+            }
+
+            document.getElementById('down-payment-percent').addEventListener('input', function() {
+                const homePrice = parseFloat(document.getElementById('home-price').value) || 0;
+                const downPaymentPercent = parseFloat(this.value) || 0;
+                const downPayment = (downPaymentPercent / 100) * homePrice;
+                document.getElementById('down-payment').value = downPayment.toFixed(2);
+                calculateMortgage();
+            });
+
+            calculateMortgage();
+        });
+    </script>
+</body>
+</html>
